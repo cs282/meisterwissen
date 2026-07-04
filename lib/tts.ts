@@ -4,9 +4,15 @@
 // fällt alles automatisch auf das bewährte tts-1 zurück (etwas schnelleres Tempo).
 
 const WILLI_STYLE =
-  "Sprich Deutsch, als energiegeladener, herzlicher Handwerker-Kollege: zügiges Tempo, " +
-  "lebendige, motivierende Betonung, freundlich und direkt – nie monoton, nie förmlich. " +
-  "Kurz und mitreißend, wie auf der Baustelle unter Kollegen.";
+  "Du bist ein deutscher Handwerker-Kollege voller Energie und Begeisterung. " +
+  "Sprich SCHNELL und dynamisch, mit deutlich angehobener, lebendiger Stimmlage – " +
+  "wie jemand, der sich richtig freut und andere ansteckt. Betone kräftig, variiere " +
+  "die Tonhöhe stark, klinge begeistert und motivierend, fast wie ein Sportkommentator " +
+  "unter Kollegen auf der Baustelle. Niemals ruhig, getragen oder monoton. " +
+  "Deutsch, locker, herzlich, mitreißend.";
+
+// Willis Stimme im steuerbaren Modell: "ash" ist heller & energischer als onyx.
+const WILLI_VOICE = "ash";
 
 export type SynthesizeOptions = {
   /** Energiegeladener Willi-Stil (Regieanweisung + höheres Tempo). */
@@ -27,13 +33,14 @@ export async function synthesizeSpeech(
   };
 
   // 1) Steuerbares Modell mit Regieanweisung (Stimmlage/Tempo).
+  // Für Willi nutzen wir dabei die hellere, energischere Stimme "ash".
   if (opts.energetic) {
     const res = await fetch("https://api.openai.com/v1/audio/speech", {
       method: "POST",
       headers,
       body: JSON.stringify({
         model: "gpt-4o-mini-tts",
-        voice,
+        voice: WILLI_VOICE,
         input,
         instructions: WILLI_STYLE,
         response_format: "mp3",
@@ -43,7 +50,7 @@ export async function synthesizeSpeech(
     // fällt unten auf tts-1 zurück (z. B. wenn das Modell nicht verfügbar ist)
   }
 
-  // 2) Bewährtes tts-1; bei Willi mit leicht erhöhtem Tempo.
+  // 2) Bewährtes tts-1 (kennt "ash" nicht -> übergebene Stimme); Willi deutlich schneller.
   const res = await fetch("https://api.openai.com/v1/audio/speech", {
     method: "POST",
     headers,
@@ -51,7 +58,7 @@ export async function synthesizeSpeech(
       model: "tts-1",
       voice,
       input,
-      speed: opts.energetic ? 1.15 : 1.0,
+      speed: opts.energetic ? 1.2 : 1.0,
       response_format: "mp3",
     }),
   });
