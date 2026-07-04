@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { categoryLabel } from "@/lib/categories";
+import { categoryLabel, groupKeyOf, DISPLAY_GROUPS } from "@/lib/categories";
 import { normalizePerson, personKey } from "@/lib/people";
 
 export const runtime = "nodejs";
@@ -11,14 +11,25 @@ const MODEL = "claude-sonnet-4-6";
 
 const SYSTEM = `Du bist der Wissensassistent der Malerwerkstätte Schmid – ein energiegeladener, motivierender Kollege. Mitarbeiter stellen dir Fragen zum Betriebswissen. Du beantwortest sie AUSSCHLIESSLICH auf Basis der internen Wissensbausteine, die dir unten mitgegeben werden. Regeln: Erfinde NIEMALS Fachwissen und rate nicht. Wenn die Antwort nicht in den Bausteinen steht, sag ehrlich und aufmunternd: "Dazu haben wir noch kein gesichertes Wissen erfasst – frag den Meister oder nimm es direkt als neuen Baustein auf, dann haben's alle!"
 
-ANTWORT-STIL (sehr wichtig): KURZ, KNAPP, AUF DEN PUNKT. Maximal 4–6 kurze Zeilen als knackige Stichpunkte (je Punkt eine Zeile, mit "•" oder "1./2./3."), das Wichtigste zuerst. KEINE Einleitungen, KEINE Überschriften, KEINE langen Absätze, KEINE Wiederholungen. Ein kurzer motivierender Einwurf ist gut ("Kriegst du hin!" / "Stark, dass du vorher fragst!") – maximal ein halber Satz am Anfang oder Ende. Höchstens EINE Warnung, wenn sie wirklich wichtig ist. Wer Details will, fragt nach. Deutsch, duzen. Nenne am Ende in Klammern die Quelle (z. B. "(Quelle: Scharfe Kante bei abgesetzter Wandfläche)").`;
+ANTWORT-STIL (sehr wichtig): KURZ, KNAPP, AUF DEN PUNKT. Maximal 4–6 kurze Zeilen als knackige Stichpunkte (je Punkt eine Zeile, mit "•" oder "1./2./3."), das Wichtigste zuerst. KEINE Einleitungen, KEINE Überschriften, KEINE langen Absätze, KEINE Wiederholungen. Ein kurzer motivierender Einwurf ist gut ("Kriegst du hin!" / "Stark, dass du vorher fragst!") – maximal ein halber Satz am Anfang oder Ende. Höchstens EINE Warnung, wenn sie wirklich wichtig ist. Wer Details will, fragt nach. Deutsch, duzen.
+
+ABSCHLUSS – IMMER genau diese zwei kurzen Zeilen ganz unten:
+(Quelle: <Titel des Bausteins/der Bausteine>)
+📚 Alles dazu in der Bibliothek unter: <Bibliothek-Rubrik(en) der verwendeten Bausteine>`;
 
 type ChatMessage = { role: "user" | "assistant"; content: string };
+
+/** Anzeigename der Bibliotheks-Rubrik (Filter-Chip) für einen Kategorie-Code. */
+function rubrikName(code: string | null | undefined): string {
+  const key = groupKeyOf(code ?? undefined);
+  return DISPLAY_GROUPS.find((g) => g.key === key)?.short ?? "Frei / Sonstiges";
+}
 
 function formatUnit(u: Record<string, unknown>): string {
   const arr = (v: unknown) => (Array.isArray(v) ? v : []);
   const lines: string[] = [];
   lines.push(`### ${u.title ?? "Ohne Titel"} [${categoryLabel(u.category as string)}]`);
+  lines.push(`Bibliothek-Rubrik: ${rubrikName(u.category as string)}`);
   if (u.situation) lines.push(`Situation: ${u.situation}`);
   const steps = arr(u.steps);
   if (steps.length) {
