@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//usr/local/bin/**)",
+      "Read(//Users/zukunftsmacher.fm/.nvm/versions/**)",
+      "Bash(ls /opt/homebrew/bin/ 2>/dev/null | grep -iE 'node|npm|pnpm|yarn|bun' ; echo \"---brew---\"; which brew; echo \"---volta---\"; ls ~/.volta/bin 2>/dev/null; echo \"---fnm---\"; which fnm 2>/dev/null; echo \"PATH=$PATH\")",
+      "Bash(find /Applications /opt /usr/local /Users/zukunftsmacher.fm -maxdepth 4 -name 'node' -type f 2>/dev/null | head; echo \"---lmstudio---\"; ls ~/.lmstudio/bin 2>/dev/null)",
+      "Bash(/Users/zukunftsmacher.fm/.lmstudio/.internal/utils/node --version)",
+      "Read(//Users/zukunftsmacher.fm/.lmstudio/.internal/utils/**)",
+      "Bash(npm --version)",
+      "Bash(which -a node npm nvm 2>/dev/null; ls -d /opt/homebrew/bin/node /usr/local/bin/node ~/.nvm 2>/dev/null; echo \"---\"; cat \"/Users/zukunftsmacher.fm/Desktop/Hackaton Schmid/.env.local.example\"; echo \"---gitignore---\"; cat \"/Users/zukunftsmacher.fm/Desktop/Hackaton Schmid/.gitignore\")",
+      "Read(//opt/homebrew/**)",
+      "Read(//usr/local/**)",
+      "Skill(claude-api)",
+      "Skill(claude-api:*)",
+      "Bash(open -e \"/Users/zukunftsmacher.fm/Desktop/Hackaton Schmid/.env.local\")",
+      "Bash(open \"http://localhost:3000/bibliothek\")",
+      "Bash(open \"http://localhost:3000/interview/b5b5b5b5-0000-4000-8000-000000000002\")",
+      "Bash(open \"http://localhost:3000/\")",
+      "Bash(open \"http://localhost:3000/gespraech/b5b5b5b5-0000-4000-8000-000000000002\")",
+      "Bash(open \"http://localhost:3000/bibliothek?kat=D\")",
+      "Bash(open \"http://localhost:3000/aufnehmen\")",
+      "Bash(open \"http://localhost:3000/aufnehmen/b5b5b5b5-0000-4000-8000-000000000002\")",
+      "Bash(open \"http://localhost:3000/team\")",
+      "Bash(open -e \"/Users/zukunftsmacher.fm/Desktop/Hackaton Schmid/supabase/migrations/0002_team.sql\")",
+      "WebFetch(domain:www.instagram.com)",
+      "WebFetch(domain:malerschmid.com)",
+      "WebSearch"
+    ]
+  }
+}
