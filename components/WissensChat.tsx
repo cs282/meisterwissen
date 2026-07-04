@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { getWilliSpeed } from "@/components/SpeedControl";
+import { encodeWav } from "@/lib/wav";
 
 type ChatMessage = { role: "user" | "assistant"; content: string };
 
@@ -31,17 +32,107 @@ export default function WissensChat({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [speaking, setSpeaking] = useState<number | null>(null);
+  const [voiceState, setVoiceState] = useState<"idle" | "rec" | "stt">("idle");
   const bottomRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Mikrofon-Aufnahme (Web Audio -> WAV, wie im Willi-Gespräch)
+  const ctxRef = useRef<AudioContext | null>(null);
+  const procRef = useRef<ScriptProcessorNode | null>(null);
+  const srcRef = useRef<MediaStreamAudioSourceNode | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const pcmRef = useRef<Float32Array[]>([]);
+  const rateRef = useRef<number>(16000);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, streaming]);
 
-  // Beim Verlassen der Seite laufende Sprachausgabe stoppen.
+  // Beim Verlassen der Seite Sprachausgabe & Mikro stoppen.
   useEffect(() => {
-    return () => audioRef.current?.pause();
+    return () => {
+      audioRef.current?.pause();
+      cleanupMic();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  function cleanupMic() {
+    try { procRef.current?.disconnect(); } catch {}
+    try { srcRef.current?.disconnect(); } catch {}
+    streamRef.current?.getTracks().forEach((t) => t.stop());
+    ctxRef.current?.close().catch(() => {});
+    ctxRef.current = null;
+  }
+
+  async function toggleMic() {
+    if (voiceState === "rec") {
+      await stopAndAsk();
+      return;
+    }
+    if (voiceState !== "idle" || busy) return;
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      streamRef.current = stream;
+      const Ctx: typeof AudioContext =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      const ctx = new Ctx();
+      ctxRef.current = ctx;
+      rateRef.current = ctx.sampleRate;
+      const src = ctx.createMediaStreamSource(stream);
+      srcRef.current = src;
+      const proc = ctx.createScriptProcessor(4096, 1, 1);
+      procRef.current = proc;
+      pcmRef.current = [];
+      proc.onaudioprocess = (e) => {
+        pcmRef.current.push(new Float32Array(e.inputBuffer.getChannelData(0)));
+      };
+      src.connect(proc);
+      proc.connect(ctx.destination);
+      setError(null);
+      setVoiceState("rec");
+    } catch {
+      setError("Kein Mikrofon-Zugriff. Bitte im Browser erlauben (nur über localhost oder https möglich).");
+    }
+  }
+
+  async function stopAndAsk() {
+    setVoiceState("stt");
+    cleanupMic();
+    const rate = rateRef.current;
+    const chunks = pcmRef.current;
+    const total = chunks.reduce((a, c) => a + c.length, 0);
+    if (total < rate * 0.4) {
+      setError("Zu kurz – Mikro antippen, Frage sprechen, dann nochmal antippen.");
+      setVoiceState("idle");
+      return;
+    }
+    const merged = new Float32Array(total);
+    let off = 0;
+    for (const c of chunks) {
+      merged.set(c, off);
+      off += c.length;
+    }
+    const wav = encodeWav(merged, rate);
+    try {
+      const fd = new FormData();
+      fd.append("audio", wav, "frage.wav");
+      const res = await fetch("/api/stt", { method: "POST", body: fd });
+      const d = await res.json();
+      if (!res.ok) throw new Error(d?.error ?? "Konnte dich nicht verstehen.");
+      const text = (d.text ?? "").trim();
+      setVoiceState("idle");
+      if (!text) {
+        setError("Nichts verstanden – bitte nochmal sprechen.");
+        return;
+      }
+      ask(text); // gesprochene Frage direkt abschicken
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Fehler.");
+      setVoiceState("idle");
+    }
+  }
 
   async function ask(question: string) {
     if (!question.trim() || busy) return;
@@ -172,7 +263,7 @@ export default function WissensChat({
 
       {error && <p className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</p>}
 
-      {/* Eingabe */}
+      {/* Eingabe: sprechen ODER tippen */}
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -180,18 +271,37 @@ export default function WissensChat({
         }}
         className="flex gap-2"
       >
+        <button
+          type="button"
+          onClick={toggleMic}
+          disabled={busy || voiceState === "stt"}
+          aria-label={voiceState === "rec" ? "Aufnahme beenden und fragen" : "Frage einsprechen"}
+          className={`flex h-[48px] w-[48px] shrink-0 items-center justify-center rounded-full text-xl transition ${
+            voiceState === "rec"
+              ? "animate-pulse bg-red-600 text-white"
+              : "border border-neutral-300 bg-white active:bg-neutral-100"
+          } disabled:opacity-40`}
+        >
+          🎤
+        </button>
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          disabled={busy}
-          placeholder={placeholder}
+          disabled={busy || voiceState !== "idle"}
+          placeholder={
+            voiceState === "rec"
+              ? "🎙️ Ich höre zu – Mikro nochmal antippen…"
+              : voiceState === "stt"
+                ? "Wird verstanden…"
+                : placeholder
+          }
           aria-label="Frage an die Wissensbank"
-          className="min-h-[48px] flex-1 rounded-full border border-neutral-300 px-5 text-base outline-none focus:border-neutral-900 disabled:bg-neutral-100"
+          className="min-h-[48px] min-w-0 flex-1 rounded-full border border-neutral-300 px-5 text-base outline-none focus:border-neutral-900 disabled:bg-neutral-100"
         />
         <button
           type="submit"
-          disabled={busy || !input.trim()}
-          className="btn-ink min-h-[48px] px-6 text-base disabled:opacity-30"
+          disabled={busy || !input.trim() || voiceState !== "idle"}
+          className="btn-ink min-h-[48px] px-5 text-base disabled:opacity-30"
         >
           Fragen
         </button>
