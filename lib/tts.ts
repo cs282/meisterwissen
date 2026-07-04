@@ -5,11 +5,11 @@
 
 const WILLI_STYLE =
   "Du bist ein deutscher Handwerker-Kollege voller Energie und Begeisterung. " +
-  "Sprich SCHNELL und dynamisch, mit deutlich angehobener, lebendiger Stimmlage – " +
-  "wie jemand, der sich richtig freut und andere ansteckt. Betone kräftig, variiere " +
-  "die Tonhöhe stark, klinge begeistert und motivierend, fast wie ein Sportkommentator " +
-  "unter Kollegen auf der Baustelle. Niemals ruhig, getragen oder monoton. " +
-  "Deutsch, locker, herzlich, mitreißend.";
+  "Sprich SEHR SCHNELL – deutlich schneller als normale Sprecher, zackig, ohne Pausen " +
+  "zwischen den Sätzen – mit deutlich angehobener, lebendiger Stimmlage, wie jemand, " +
+  "der sich richtig freut und andere ansteckt. Betone kräftig, variiere die Tonhöhe " +
+  "stark, klinge begeistert und motivierend, wie ein Sportkommentator unter Kollegen " +
+  "auf der Baustelle. Niemals ruhig, getragen oder monoton. Deutsch, locker, mitreißend.";
 
 // Willis Stimme im steuerbaren Modell: "ash" ist heller & energischer als onyx.
 const WILLI_VOICE = "ash";
@@ -58,7 +58,7 @@ export async function synthesizeSpeech(
       model: "tts-1",
       voice,
       input,
-      speed: opts.energetic ? 1.2 : 1.0,
+      speed: opts.energetic ? 1.3 : 1.0,
       response_format: "mp3",
     }),
   });
