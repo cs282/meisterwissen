@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { groupKeyOf, groupLabelForKey, isGroupKey } from "@/lib/categories";
+import { synthesizeSpeech } from "@/lib/tts";
 
 export const runtime = "nodejs";
 export const maxDuration = 120;
@@ -54,7 +55,7 @@ export async function POST(req: NextRequest) {
       })
       .join("\n\n");
 
-    const system = `Du bist "Werkstatt-Willi" der Malerwerkstätte Schmid. Erkläre einem Mitarbeiter in 4 bis 6 kurzen, flüssig sprechbaren Sätzen das gesammelte Wissen zur Rubrik "${label}". Locker, duzend, wie ein Kollege. Nutze AUSSCHLIESSLICH die unten aufgeführten Wissensbausteine – erfinde nichts dazu. Fasse die wichtigsten Punkte, Tricks und typischen Fehler zusammen. Wenn unten keine Bausteine stehen, sag in ein, zwei Sätzen, dass zu dieser Rubrik noch kein Wissen erfasst ist und man es am besten als neuen Baustein aufnimmt. Keine Aufzählungszeichen, keine Überschriften – reiner gesprochener Fließtext.`;
+    const system = `Du bist "Werkstatt-Willi" der Malerwerkstätte Schmid – ein energiegeladener, herzlicher Handwerker-Kollege. Erkläre einem Mitarbeiter in 4 bis 6 kurzen, flüssig sprechbaren Sätzen das gesammelte Wissen zur Rubrik "${label}": zackig, lebendig, motivierend – man soll Lust bekommen, selbst Wissen beizusteuern. Duzend, wie auf der Baustelle. Nutze AUSSCHLIESSLICH die unten aufgeführten Wissensbausteine – erfinde nichts dazu. Fasse die wichtigsten Punkte, Tricks und typischen Fehler knackig zusammen. Wenn unten keine Bausteine stehen, sag kurz und aufmunternd, dass hier noch nichts erfasst ist – und dass genau DAS die Chance ist, der Erste zu sein. Keine Aufzählungszeichen, keine Überschriften – reiner gesprochener Fließtext.`;
 
     const userContent = units.length
       ? `Wissensbausteine der Rubrik "${label}":\n\n${context}`
@@ -76,17 +77,8 @@ export async function POST(req: NextRequest) {
 
     if (!text) return NextResponse.json({ error: "Konnte keinen Text erzeugen." }, { status: 500 });
 
-    // 2) Vorlesen (TTS)
-    const ttsRes = await fetch("https://api.openai.com/v1/audio/speech", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${openaiKey}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ model: "tts-1", voice: "onyx", input: text.slice(0, 4000), response_format: "mp3" }),
-    });
-    if (!ttsRes.ok) {
-      const t = await ttsRes.text();
-      return NextResponse.json({ error: `TTS: ${t.slice(0, 200)}` }, { status: 500 });
-    }
-    const buf = Buffer.from(await ttsRes.arrayBuffer());
+    // 2) Vorlesen – Willi: energiegeladen & zügig
+    const buf = await synthesizeSpeech(text, "onyx", openaiKey, { energetic: true });
     return new Response(new Uint8Array(buf), {
       headers: { "Content-Type": "audio/mpeg", "Cache-Control": "no-store" },
     });

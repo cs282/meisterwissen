@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { hasBaustein } from "@/lib/baustein";
+import { hasBaustein, stripBaustein } from "@/lib/baustein";
 
 type ChatMessage = { role: "user" | "assistant"; content: string };
 
@@ -24,6 +24,7 @@ export default function InterviewChat({
   const [input, setInput] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [savedInfo, setSavedInfo] = useState<string | null>(null);
+  const [finished, setFinished] = useState(false); // Baustein gespeichert -> Interview beendet
   const lastSavedRef = useRef<string>("");
   const startedRef = useRef(false);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -107,11 +108,12 @@ export default function InterviewChat({
         body: JSON.stringify({ id, messages: msgs }),
       });
       const data = await res.json();
-      setSavedInfo(
-        res.ok
-          ? "✅ Baustein automatisch in der Wissensbank gespeichert."
-          : `⚠️ Konnte nicht automatisch speichern: ${data?.error ?? "unbekannt"}`,
-      );
+      if (res.ok) {
+        setSavedInfo("✅ Fertig! Dein Wissen ist sicher in der Wissensbank gespeichert.");
+        setFinished(true); // Interview beendet – keine Eingabe mehr
+      } else {
+        setSavedInfo(`⚠️ Konnte nicht automatisch speichern: ${data?.error ?? "unbekannt"}`);
+      }
     } catch {
       setSavedInfo("⚠️ Konnte nicht automatisch speichern (Verbindung).");
     }
@@ -131,12 +133,14 @@ export default function InterviewChat({
         <p className="text-xs text-neutral-500">{categoryText}</p>
       </header>
 
-      {/* Verlauf */}
+      {/* Verlauf (JSON-Baustein wird nicht angezeigt – nur die Bestätigung) */}
       <div className="flex flex-1 flex-col gap-3 py-4">
-        {messages.map((m, i) => (
-          <Bubble key={i} role={m.role} text={m.content} />
-        ))}
-        {busy && streaming && <Bubble role="assistant" text={streaming} />}
+        {messages.map((m, i) => {
+          const text = m.role === "assistant" ? stripBaustein(m.content) : m.content;
+          if (!text) return null;
+          return <Bubble key={i} role={m.role} text={text} />;
+        })}
+        {busy && streaming && <Bubble role="assistant" text={stripBaustein(streaming) || "…"} />}
         {busy && !streaming && (
           <div className="mr-auto rounded-2xl bg-neutral-100 px-4 py-2 text-sm text-neutral-500">
             Willi denkt nach…
@@ -148,37 +152,39 @@ export default function InterviewChat({
         <div ref={bottomRef} />
       </div>
 
-      {/* Automatisch gespeichert */}
+      {/* Abschluss-Bestätigung */}
       {savedInfo && (
         <div className="mb-3 flex flex-col gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-3">
           <p className="text-sm font-medium text-emerald-800">{savedInfo}</p>
           <button
             onClick={() => router.push("/bibliothek")}
-            className="rounded-lg bg-emerald-700 px-4 py-2.5 text-sm font-semibold text-white"
+            className="rounded-full bg-emerald-700 px-4 py-3 text-sm font-semibold text-white active:bg-emerald-800"
           >
-            📚 In der Bibliothek ansehen
+            ✓ Bestätigen
           </button>
         </div>
       )}
 
-      {/* Eingabe */}
-      <form onSubmit={handleSend} className="sticky bottom-0 flex gap-2 bg-white pb-2 pt-1">
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder={busy ? "Bitte warten…" : "Antwort an Willi…"}
-          disabled={busy}
-          className="flex-1 rounded-xl border border-neutral-300 px-4 py-3 text-sm disabled:bg-neutral-50"
-        />
-        <button
-          type="submit"
-          disabled={busy || !input.trim()}
-          className="btn-ink px-5 py-3 text-sm disabled:opacity-40"
-        >
-          Senden
-        </button>
-      </form>
+      {/* Eingabe – nach Abschluss ausgeblendet, das Interview ist beendet */}
+      {!finished && (
+        <form onSubmit={handleSend} className="sticky bottom-0 flex gap-2 bg-white pb-2 pt-1">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder={busy ? "Bitte warten…" : "Antwort an Willi…"}
+            disabled={busy}
+            className="flex-1 rounded-xl border border-neutral-300 px-4 py-3 text-sm disabled:bg-neutral-50"
+          />
+          <button
+            type="submit"
+            disabled={busy || !input.trim()}
+            className="btn-ink px-5 py-3 text-sm disabled:opacity-40"
+          >
+            Senden
+          </button>
+        </form>
+      )}
     </main>
   );
 }

@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
-import { hasBaustein } from "@/lib/baustein";
+import { hasBaustein, stripBaustein } from "@/lib/baustein";
 import { encodeWav } from "@/lib/wav";
 
 type ChatMessage = { role: "user" | "assistant"; content: string };
@@ -10,7 +10,7 @@ type ChatMessage = { role: "user" | "assistant"; content: string };
 // json-Codeblock nicht vorlesen – nur den gesprochenen Teil.
 function speakable(text: string): string {
   return text
-    .replace(/```json[\s\S]*?```/g, " Ich hab dir unten den fertigen Baustein zusammengestellt. ")
+    .replace(/```json[\s\S]*?```/g, " ")
     .replace(/```[\s\S]*?```/g, " ")
     .trim();
 }
@@ -30,6 +30,7 @@ export default function VoiceInterview({
   const [phase, setPhase] = useState<"idle" | "willi" | "speaking" | "listening" | "thinking">("idle");
   const [error, setError] = useState<string | null>(null);
   const [savedInfo, setSavedInfo] = useState<string | null>(null);
+  const [finished, setFinished] = useState(false); // Baustein gespeichert -> Gespräch beendet
 
   const lastSavedRef = useRef<string>("");
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -227,7 +228,8 @@ export default function VoiceInterview({
       });
       const d = await res.json();
       if (res.ok) {
-        setSavedInfo("✅ Baustein automatisch in der Wissensbank gespeichert.");
+        setSavedInfo("✅ Fertig! Dein Wissen ist sicher in der Wissensbank gespeichert.");
+        setFinished(true); // Gespräch beendet – Mikro & Fragen aus
       } else {
         setSavedInfo(`⚠️ Konnte nicht automatisch speichern: ${d?.error ?? "unbekannt"}`);
       }
@@ -252,38 +254,42 @@ export default function VoiceInterview({
         <p className="text-xs text-neutral-500">{categoryText}</p>
       </header>
 
-      {/* Verlauf (zum Mitlesen) */}
+      {/* Verlauf (zum Mitlesen; der JSON-Baustein wird nicht angezeigt) */}
       <div className="flex flex-1 flex-col gap-3 py-4">
-        {messages.map((m, i) => (
-          <div
-            key={i}
-            className={`${
-              m.role === "user"
-                ? "ml-auto bg-neutral-900 text-white"
-                : "mr-auto bg-neutral-100 text-neutral-900"
-            } max-w-[85%] whitespace-pre-wrap rounded-2xl px-4 py-2.5 text-sm leading-relaxed`}
-          >
-            {m.content}
-          </div>
-        ))}
+        {messages.map((m, i) => {
+          const text = m.role === "assistant" ? stripBaustein(m.content) : m.content;
+          if (!text) return null;
+          return (
+            <div
+              key={i}
+              className={`${
+                m.role === "user"
+                  ? "ml-auto bg-neutral-900 text-white"
+                  : "mr-auto bg-neutral-100 text-neutral-900"
+              } max-w-[85%] whitespace-pre-wrap rounded-2xl px-4 py-2.5 text-sm leading-relaxed`}
+            >
+              {text}
+            </div>
+          );
+        })}
         {error && <p className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</p>}
       </div>
 
-      {/* Automatisch gespeichert */}
+      {/* Abschluss-Bestätigung */}
       {savedInfo && (
         <div className="mb-3 flex flex-col gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-3">
           <p className="text-sm font-medium text-emerald-800">{savedInfo}</p>
           <button
             onClick={() => router.push("/bibliothek")}
-            className="rounded-lg bg-emerald-700 px-4 py-2.5 text-sm font-semibold text-white"
+            className="rounded-full bg-emerald-700 px-4 py-3 text-sm font-semibold text-white active:bg-emerald-800"
           >
-            📚 In der Bibliothek ansehen
+            ✓ Bestätigen
           </button>
         </div>
       )}
 
-      {/* Steuerung */}
-      <div className="sticky bottom-0 flex flex-col items-center gap-3 bg-white py-4">
+      {/* Steuerung – nach Abschluss ausgeblendet, das Gespräch ist beendet */}
+      <div className={`sticky bottom-0 flex flex-col items-center gap-3 bg-white py-4 ${finished ? "hidden" : ""}`}>
         <p className="text-center text-sm text-neutral-500">{started ? statusText : "Bereit?"}</p>
 
         {!started ? (

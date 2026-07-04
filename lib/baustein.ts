@@ -49,3 +49,11 @@ export function extractBaustein(text: string): Baustein | null {
 export function hasBaustein(text: string): boolean {
   return extractBaustein(text) !== null;
 }
+
+/**
+ * Entfernt json-Codeblöcke aus Willis Antwort – für die Anzeige im Chat.
+ * (Der Baustein wird gespeichert; der Nutzer soll nur die Bestätigung sehen.)
+ */
+export function stripBaustein(text: string): string {
+  return text.replace(/```json[\s\S]*?```/g, "").replace(/```[\s\S]*?```/g, "").trim();
+}
