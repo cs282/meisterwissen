@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { CATEGORY_GROUPS } from "@/lib/categories";
 import WissensChat from "@/components/WissensChat";
 
 export const dynamic = "force-dynamic";
@@ -88,28 +87,6 @@ export default async function Dashboard() {
         </div>
         <span className="text-gold text-lg">→</span>
       </Link>
-
-      {/* Rubriken */}
-      <section>
-        <div className="mb-3 flex items-center gap-3">
-          <h3 className="eyebrow text-neutral-400">Rubriken</h3>
-          <span className="rule-gold flex-1" />
-        </div>
-        <div className="grid grid-cols-1 gap-2">
-          {CATEGORY_GROUPS.map((g, i) => (
-            <Link
-              key={g.key}
-              href={`/bibliothek?kat=${g.key}`}
-              className="card card-tap flex min-h-[58px] items-center gap-4 px-4"
-            >
-              <span className="font-display w-6 text-center text-lg text-gold">{i + 1}</span>
-              <span className="h-6 w-px bg-neutral-200" />
-              <span className="text-base font-medium text-neutral-800">{g.short}</span>
-              <span className="ml-auto text-neutral-300">→</span>
-            </Link>
-          ))}
-        </div>
-      </section>
 
       <footer className="flex flex-col items-center gap-3 pb-8 pt-4">
         <span className="rule-gold w-16" />

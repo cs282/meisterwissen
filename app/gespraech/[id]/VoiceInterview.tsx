@@ -1,9 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { hasBaustein, stripBaustein } from "@/lib/baustein";
 import { encodeWav } from "@/lib/wav";
+import SpeedControl, { getWilliSpeed } from "@/components/SpeedControl";
 
 type ChatMessage = { role: "user" | "assistant"; content: string };
 
@@ -31,6 +32,22 @@ export default function VoiceInterview({
   const [error, setError] = useState<string | null>(null);
   const [savedInfo, setSavedInfo] = useState<string | null>(null);
   const [finished, setFinished] = useState(false); // Baustein gespeichert -> Gespräch beendet
+  const [speed, setSpeed] = useState(1); // Willis Sprechtempo (1x / 1,5x / 2x)
+  const speedRef = useRef(1);
+
+  // Gemerktes Tempo vom Gerät laden.
+  useEffect(() => {
+    const s = getWilliSpeed();
+    setSpeed(s);
+    speedRef.current = s;
+  }, []);
+
+  function changeSpeed(v: number) {
+    setSpeed(v);
+    speedRef.current = v;
+    // Läuft Willi gerade? Tempo sofort übernehmen.
+    if (audioRef.current) audioRef.current.playbackRate = v;
+  }
 
   const lastSavedRef = useRef<string>("");
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -57,6 +74,7 @@ export default function VoiceInterview({
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const audio = new Audio(url);
+      audio.playbackRate = speedRef.current; // gewähltes Willi-Tempo (1x/1,5x/2x)
       audioRef.current = audio;
       await new Promise<void>((resolve) => {
         skipResolveRef.current = resolve;
@@ -290,6 +308,7 @@ export default function VoiceInterview({
 
       {/* Steuerung – nach Abschluss ausgeblendet, das Gespräch ist beendet */}
       <div className={`sticky bottom-0 flex flex-col items-center gap-3 bg-white py-4 ${finished ? "hidden" : ""}`}>
+        <SpeedControl value={speed} onChange={changeSpeed} />
         <p className="text-center text-sm text-neutral-500">{started ? statusText : "Bereit?"}</p>
 
         {!started ? (

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { getWilliSpeed } from "@/components/SpeedControl";
 
 type ChatMessage = { role: "user" | "assistant"; content: string };
 
@@ -99,6 +100,7 @@ export default function WissensChat({
       if (!res.ok) throw new Error();
       const blob = await res.blob();
       const audio = new Audio(URL.createObjectURL(blob));
+      if (!voice) audio.playbackRate = getWilliSpeed(); // Willi-Tempo (Avatare: normal)
       audioRef.current = audio;
       audio.onended = () => setSpeaking(null);
       audio.onerror = () => setSpeaking(null);

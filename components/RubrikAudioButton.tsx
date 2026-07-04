@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { getWilliSpeed } from "@/components/SpeedControl";
 
 /**
  * „🔊 Willi erklärt": holt eine kurze gesprochene Zusammenfassung des
@@ -40,6 +41,7 @@ export default function RubrikAudioButton({ kat, label }: { kat: string; label: 
       }
       const blob = await res.blob();
       const audio = new Audio(URL.createObjectURL(blob));
+      audio.playbackRate = getWilliSpeed(); // gewähltes Willi-Tempo
       audioRef.current = audio;
       audio.onended = () => setState("idle");
       audio.onerror = () => setState("idle");
