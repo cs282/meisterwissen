@@ -184,7 +184,7 @@ export default function TeamSettings() {
           <div className="flex items-center gap-3">
             <button
               onClick={() => save(p)}
-              className="min-h-[44px] rounded-xl bg-blue-700 px-5 text-sm font-semibold text-white active:bg-blue-800"
+              className="btn-ink min-h-[44px] px-5 text-sm"
             >
               Speichern
             </button>

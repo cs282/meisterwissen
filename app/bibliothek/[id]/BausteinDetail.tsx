@@ -121,7 +121,7 @@ export default function BausteinDetail({
         </div>
         {!editing ? (
           <>
-            <h1 className="mt-2 text-2xl font-bold">{unit.title || "Ohne Titel"}</h1>
+            <h1 className="font-display mt-2 text-3xl font-semibold tracking-tight">{unit.title || "Ohne Titel"}</h1>
             <p className="mt-1 text-sm text-neutral-500">{categoryLabel(unit.category)}</p>
           </>
         ) : (
@@ -144,7 +144,7 @@ export default function BausteinDetail({
       {!editing && (
         <Link
           href={`/gespraech/${unit.id}`}
-          className="flex min-h-[52px] items-center justify-center gap-2 rounded-xl bg-blue-700 px-4 text-base font-semibold text-white active:bg-blue-800"
+          className="btn-ink flex min-h-[52px] items-center justify-center gap-2 px-4 text-base"
         >
           🎧 Mit Willi zu diesem Thema sprechen
         </Link>
@@ -395,7 +395,7 @@ export default function BausteinDetail({
         {!editing ? (
           <button
             onClick={() => setEditing(true)}
-            className="rounded-xl bg-neutral-900 px-4 py-3.5 text-base font-semibold text-white"
+            className="btn-ink min-h-[52px] px-4 text-base"
           >
             Meister-Review starten
           </button>
@@ -447,7 +447,10 @@ export default function BausteinDetail({
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="flex flex-col gap-2">
-      <h2 className="text-sm font-semibold">{title}</h2>
+      <div className="flex items-center gap-3">
+        <h2 className="eyebrow text-neutral-400">{title}</h2>
+        <span className="rule-gold flex-1" />
+      </div>
       {children}
     </section>
   );

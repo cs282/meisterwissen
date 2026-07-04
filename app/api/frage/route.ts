@@ -58,11 +58,13 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const question = String(body?.question ?? "").trim();
     const person = normalizePerson(body?.person); // optional: nur Wissen dieser Person
-    const history: ChatMessage[] = Array.isArray(body?.messages)
-      ? body.messages.filter(
-          (m: ChatMessage) => (m?.role === "user" || m?.role === "assistant") && typeof m?.content === "string",
-        )
-      : [];
+    const history: ChatMessage[] = (
+      Array.isArray(body?.messages)
+        ? body.messages.filter(
+            (m: ChatMessage) => (m?.role === "user" || m?.role === "assistant") && typeof m?.content === "string",
+          )
+        : []
+    ).slice(-12); // Verlauf begrenzen – hält Kontext & Kosten im Rahmen
 
     if (!question) {
       return NextResponse.json({ error: "Keine Frage." }, { status: 400 });

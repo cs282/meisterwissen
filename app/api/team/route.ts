@@ -12,33 +12,43 @@ export const dynamic = "force-dynamic";
  * Bausteinen) inkl. aufgelöster Stimme/Emoji/Rolle – für Einstellungs-Seite & Picker.
  */
 export async function GET() {
-  const supabase = createAdminClient();
-  const team = await loadTeam();
+  try {
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_KEY) {
+      return NextResponse.json({ error: "Supabase-Zugangsdaten fehlen." }, { status: 500 });
+    }
+    const supabase = createAdminClient();
+    const team = await loadTeam();
 
-  // Beitragende aus den Bausteinen (auch ohne Einstellungs-Eintrag).
-  const { data } = await supabase.from("knowledge_units").select("created_by");
-  const counts = new Map<string, { name: string; count: number }>();
-  for (const r of data ?? []) {
-    const name = normalizePerson(r.created_by as string);
-    if (!name) continue;
-    const k = personKey(name);
-    const e = counts.get(k) ?? { name, count: 0 };
-    e.count++;
-    counts.set(k, e);
+    // Beitragende aus den Bausteinen (auch ohne Einstellungs-Eintrag).
+    const { data } = await supabase.from("knowledge_units").select("created_by");
+    const counts = new Map<string, { name: string; count: number }>();
+    for (const r of data ?? []) {
+      const name = normalizePerson(r.created_by as string);
+      if (!name) continue;
+      const k = personKey(name);
+      const e = counts.get(k) ?? { name, count: 0 };
+      e.count++;
+      counts.set(k, e);
+    }
+
+    // Namen aus Einstellungen + Beitragende zusammenführen.
+    const keys = new Set<string>([...counts.keys(), ...team.map((m) => personKey(m.name))]);
+    const people = [...keys]
+      .map((k) => {
+        const name = counts.get(k)?.name ?? team.find((m) => personKey(m.name) === k)?.name ?? k;
+        const r = resolveMember(name, team);
+        const configured = team.some((m) => personKey(m.name) === k);
+        return { ...r, count: counts.get(k)?.count ?? 0, configured };
+      })
+      .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+
+    return NextResponse.json({ people });
+  } catch (e) {
+    return NextResponse.json(
+      { error: e instanceof Error ? e.message : "Fehler" },
+      { status: 500 },
+    );
   }
-
-  // Namen aus Einstellungen + Beitragende zusammenführen.
-  const keys = new Set<string>([...counts.keys(), ...team.map((m) => personKey(m.name))]);
-  const people = [...keys]
-    .map((k) => {
-      const name = counts.get(k)?.name ?? team.find((m) => personKey(m.name) === k)?.name ?? k;
-      const r = resolveMember(name, team);
-      const configured = team.some((m) => personKey(m.name) === k);
-      return { ...r, count: counts.get(k)?.count ?? 0, configured };
-    })
-    .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
-
-  return NextResponse.json({ people });
 }
 
 /**

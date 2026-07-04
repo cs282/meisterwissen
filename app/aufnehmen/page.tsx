@@ -65,7 +65,8 @@ export default function AufnehmenPage() {
   return (
     <main className="mx-auto flex min-h-screen max-w-md flex-col gap-6 p-5">
       <header className="pt-2">
-        <h1 className="text-2xl font-bold">Aufnehmen</h1>
+        <p className="eyebrow text-neutral-400">Wissen sichern</p>
+        <h1 className="font-display mt-1 text-3xl font-semibold tracking-tight">Aufnehmen</h1>
         <p className="mt-1 text-sm text-neutral-500">
           Baustellen-Aufnahme hochladen – Werkstatt-Willi macht daraus einen
           Wissensbaustein.
@@ -178,7 +179,7 @@ export default function AufnehmenPage() {
         <button
           type="submit"
           disabled={submitting}
-          className="mt-1 rounded-xl bg-neutral-900 px-4 py-4 text-base font-semibold text-white disabled:opacity-50"
+          className="btn-ink mt-1 min-h-[56px] px-4 text-base disabled:opacity-50"
         >
           {submitting ? "Wird verarbeitet & transkribiert…" : "Aufnahme hochladen"}
         </button>

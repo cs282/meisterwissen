@@ -56,7 +56,7 @@ const UNITS = [
       S(2, "Schaden beheben lassen – niemals über eine aktive Leckage streichen.", "Sonst Dauerbaustelle."),
       S(3, "Fläche vollständig trocknen lassen (Messgerät oder klar heller, trockener Rand)."),
       S(4, "Lose/abblätternde Stellen abkratzen, Untergrund festigen."),
-      S(5, "Aufbrennsperre/Isoliergrund satt auftragen, Trockenzeit einhalten."),
+      S(5, "Isoliergrund (Absperrgrund) satt auftragen, Trockenzeit einhalten."),
       S(6, "Deckend in zwei Schichten überstreichen."),
     ],
     expert_tips: [
@@ -75,18 +75,18 @@ const UNITS = [
   },
   {
     id: uid("f1ec0003", 3), category: "G7", created_by: "Toni (Facharbeiter)",
-    title: "Aufbrennsperre richtig auftragen",
+    title: "Isoliergrund richtig auftragen",
     situation: "Der Fleck ist diagnostiziert und die Fläche trocken. Jetzt wird abgesperrt, damit nichts mehr durchschlägt.",
     steps: [
       S(1, "Fläche nebelfeucht reinigen, trocknen lassen."),
-      S(2, "Sperrgrund/Aufbrennsperre gut aufrühren."),
+      S(2, "Isoliergrund (Absperrgrund) gut aufrühren."),
       S(3, "Satt und gleichmäßig auftragen – lieber die ganze Wand als nur den Fleck.", "Nur den Fleck sperren = sichtbarer Rand/Kasten."),
       S(4, "Herstellerangabe zur Trockenzeit strikt einhalten."),
       S(5, "Bei starkem Nikotin/Teer eine zweite Sperrschicht."),
       S(6, "Erst danach Dispersion in zwei Deckschichten."),
     ],
     materials: [
-      { produkt: "Aufbrennsperre / Isoliergrund", hersteller: "diverse", verbrauch_pro_m2: "nach Herstellerangabe", gebinde: "2,5 l" },
+      { produkt: "Isoliergrund / Absperrgrund", hersteller: "diverse", verbrauch_pro_m2: "nach Herstellerangabe", gebinde: "2,5 l" },
       { produkt: "Dispersion matt", hersteller: "Brillux / Caparol", verbrauch_pro_m2: "ca. 150 ml/m² je Anstrich", gebinde: "12,5 l" },
     ],
     expert_tips: [
@@ -102,14 +102,14 @@ const UNITS = [
       "Gelber Rand nach dem Trocknen = Sperre zu dünn oder fehlt.",
       "Sichtbarer Kasten um den Fleck = nur partiell gesperrt.",
     ],
-    transcript: "Die Aufbrennsperre trage ich immer satt und über die ganze Fläche auf, nicht nur auf den Fleck, sonst sieht man den Rand. Trockenzeit genau einhalten, bei starkem Nikotin zweimal, dann erst die Dispersion.",
+    transcript: "Den Isoliergrund trage ich immer satt und über die ganze Fläche auf, nicht nur auf den Fleck, sonst sieht man den Rand. Trockenzeit genau einhalten, bei starkem Nikotin zweimal, dann erst die Dispersion.",
   },
   {
     id: uid("f1ec0004", 4), category: "G6", created_by: "Toni (Facharbeiter)",
-    title: "Sperrgrund-Wahl: Isoliergrund, Schellack oder Aufbrennsperre?",
+    title: "Sperrgrund-Wahl: wasserbasierter Isoliergrund oder Schellack?",
     situation: "Es gibt verschiedene Sperren – welche passt wann? Die falsche Wahl heißt: Fleck schlägt durch oder unnötiger Aufwand.",
     steps: [
-      S(1, "Nikotin/Teer auf großer Fläche → wasserbasierte Aufbrennsperre (geruchsärmer, gut deckend)."),
+      S(1, "Nikotin/Teer auf großer Fläche → wasserbasierter Isoliergrund (geruchsarm, gut für große Flächen)."),
       S(2, "Hartnäckige, punktuelle Wasser-/Nikotinflecken → lösemittel-/schellackbasierte Sperre (sehr sicher, schnell trocken)."),
       S(3, "Rostfahnen → Metall entrosten & grundieren, spezieller Rostsperrgrund."),
       S(4, "Immer: Fläche muss trocken und tragfähig sein.", "Sonst wirkt keine Sperre."),
@@ -125,7 +125,7 @@ const UNITS = [
     diagnosis_hints: [
       "Kommt der Fleck trotz Sperre wieder = falsche Sperrenart oder Restfeuchte.",
     ],
-    transcript: "Für Nikotin auf großen Flächen nehm ich eine wasserbasierte Aufbrennsperre, bei hartnäckigen Punktflecken lieber Schellack, der sperrt fast alles. Rost muss ich vorher behandeln, nur überstreichen bringt nichts.",
+    transcript: "Für Nikotin auf großen Flächen nehm ich einen wasserbasierten Isoliergrund, bei hartnäckigen Punktflecken lieber Schellack, der sperrt fast alles. Rost muss ich vorher behandeln, nur überstreichen bringt nichts.",
   },
 ];
 

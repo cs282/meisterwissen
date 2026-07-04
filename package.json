@@ -9,7 +9,8 @@
     "lint": "next lint",
     "seed": "node --env-file=.env.local scripts/seed.mjs",
     "seed:team": "node --env-file=.env.local scripts/seed-team.mjs",
-    "seed:pitch": "node --env-file=.env.local scripts/seed-pitch.mjs"
+    "seed:pitch": "node --env-file=.env.local scripts/seed-pitch.mjs",
+    "seed:beispiele": "node --env-file=.env.local scripts/seed-beispiele.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.65.0",

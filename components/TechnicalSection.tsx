@@ -53,7 +53,10 @@ export default function TechnicalSection({
 
   return (
     <section className="flex flex-col gap-2">
-      <h2 className="text-sm font-semibold">Technische Merkblätter (TM)</h2>
+      <div className="flex items-center gap-3">
+        <h2 className="eyebrow text-neutral-400">Technische Merkblätter</h2>
+        <span className="rule-gold flex-1" />
+      </div>
       {items.length > 0 && (
         <ul className="flex flex-col gap-2">
           {items.map((t) => (
@@ -89,7 +92,7 @@ export default function TechnicalSection({
         <button
           type="submit"
           disabled={busy}
-          className="min-h-[48px] rounded-lg bg-neutral-900 px-4 text-base font-semibold text-white disabled:opacity-50"
+          className="btn-ink min-h-[48px] px-4 text-base disabled:opacity-50"
         >
           {busy ? "Wird hochgeladen…" : "Merkblatt hochladen"}
         </button>

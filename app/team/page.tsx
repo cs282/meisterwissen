@@ -37,7 +37,7 @@ export default async function TeamPage() {
         <Link href="/" className="text-sm text-neutral-500 underline">
           ← Start
         </Link>
-        <h1 className="mt-2 text-2xl font-bold">Team &amp; Avatare</h1>
+        <h1 className="font-display mt-2 text-3xl font-semibold tracking-tight">Team &amp; Avatare</h1>
         <p className="mt-1 text-base text-neutral-600">
           Jede Person, die Wissen beigesteuert hat, wird zum eigenen Avatar –
           du kannst sie direkt fragen, in ihrem Stil und mit ihrer Stimme.

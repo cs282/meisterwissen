@@ -25,6 +25,14 @@ export async function POST(
     if (!source) {
       return NextResponse.json({ error: "Quellenangabe fehlt." }, { status: 400 });
     }
+    const isPdf =
+      file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
+    if (!isPdf) {
+      return NextResponse.json({ error: "Bitte eine PDF-Datei wählen." }, { status: 400 });
+    }
+    if (file.size > 25 * 1024 * 1024) {
+      return NextResponse.json({ error: "PDF ist zu groß (max. 25 MB)." }, { status: 400 });
+    }
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_KEY) {
       return NextResponse.json(
         { error: "Supabase-Zugangsdaten sind nicht konfiguriert (.env.local)." },

@@ -16,14 +16,24 @@ export async function POST(
 ) {
   try {
     const { id } = await params;
+    if (!id) {
+      return NextResponse.json({ error: "Baustein-ID fehlt." }, { status: 400 });
+    }
     const body = await req.json();
     const action = body?.action === "publish" ? "publish" : "save";
     const fields = body?.fields ?? {};
     const reviewerName = String(body?.reviewerName ?? "").trim();
+    const title = typeof fields.title === "string" ? fields.title.trim() : "";
 
     if (action === "publish" && !reviewerName) {
       return NextResponse.json(
         { error: "Bitte Name des Prüfers eintragen, um freizugeben." },
+        { status: 400 },
+      );
+    }
+    if (action === "publish" && !title) {
+      return NextResponse.json(
+        { error: "Ohne Titel kann nicht freigegeben werden." },
         { status: 400 },
       );
     }
@@ -39,7 +49,6 @@ export async function POST(
     const asObjArray = (v: unknown): unknown[] => (Array.isArray(v) ? v : []);
 
     const update: Record<string, unknown> = {
-      title: typeof fields.title === "string" ? fields.title : null,
       situation: typeof fields.situation === "string" ? fields.situation : null,
       steps: asObjArray(fields.steps),
       materials: asObjArray(fields.materials),
@@ -48,6 +57,9 @@ export async function POST(
       common_mistakes: asStringArray(fields.common_mistakes),
       diagnosis_hints: asStringArray(fields.diagnosis_hints),
     };
+
+    // Titel nur übernehmen, wenn wirklich einer da ist (nie versehentlich löschen)
+    if (title) update.title = title;
 
     // Kategorie übernehmen (Standard-Rubrik oder Freie Eingabe)
     if (isValidCategory(fields.category)) {

@@ -41,6 +41,13 @@ export async function POST(req: NextRequest) {
     if (!title) {
       return NextResponse.json({ error: "Titel fehlt." }, { status: 400 });
     }
+    // Harte Server-Grenze (Storage-Limit); der Client warnt schon früher bei 24 MB.
+    if (file.size > 48 * 1024 * 1024) {
+      return NextResponse.json(
+        { error: "Datei ist zu groß (max. 48 MB). Tipp: Audio statt Video aufnehmen." },
+        { status: 400 },
+      );
+    }
 
     const openaiKey = process.env.OPENAI_API_KEY;
     if (!openaiKey) {
@@ -80,6 +87,8 @@ export async function POST(req: NextRequest) {
         upsert: false,
       });
     if (upErr) {
+      // Kein verwaister Baustein ohne Aufnahme zurückbleiben lassen.
+      await supabase.from("knowledge_units").delete().eq("id", ku.id);
       throw new Error(`Upload in Storage fehlgeschlagen: ${upErr.message}`);
     }
 

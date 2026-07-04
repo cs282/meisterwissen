@@ -25,7 +25,11 @@
       "Bash(open -e \"/Users/zukunftsmacher.fm/Desktop/Hackaton Schmid/supabase/migrations/0002_team.sql\")",
       "WebFetch(domain:www.instagram.com)",
       "WebFetch(domain:malerschmid.com)",
-      "WebSearch"
+      "WebSearch",
+      "mcp__cf12c785-0299-4ae8-9008-a1c8125f5c47__list-brand-kits",
+      "mcp__cf12c785-0299-4ae8-9008-a1c8125f5c47__request-outline-review",
+      "mcp__cf12c785-0299-4ae8-9008-a1c8125f5c47__generate-design-structured",
+      "mcp__cf12c785-0299-4ae8-9008-a1c8125f5c47__create-design-from-candidate"
     ]
   }
 }

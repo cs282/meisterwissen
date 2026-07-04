@@ -24,6 +24,12 @@ export async function POST(
     if (!file.type.startsWith("image/")) {
       return NextResponse.json({ error: "Bitte eine Bilddatei wählen." }, { status: 400 });
     }
+    if (file.size > 15 * 1024 * 1024) {
+      return NextResponse.json(
+        { error: "Bild ist zu groß (max. 15 MB). Tipp: normales Handy-Foto reicht völlig." },
+        { status: 400 },
+      );
+    }
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_KEY) {
       return NextResponse.json({ error: "Supabase-Zugangsdaten fehlen." }, { status: 500 });
     }

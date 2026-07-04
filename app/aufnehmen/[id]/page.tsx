@@ -89,7 +89,7 @@ export default async function TranskriptPage({
             </span>
           )}
         </div>
-        <h1 className="mt-3 text-2xl font-bold">{ku.title}</h1>
+        <h1 className="font-display mt-3 text-3xl font-semibold tracking-tight">{ku.title}</h1>
         <p className="mt-1 text-sm text-neutral-600">
           <span className="text-neutral-400">Rubrik: </span>
           {ku.category
@@ -134,13 +134,13 @@ export default async function TranskriptPage({
       <div className="flex flex-col gap-3">
         <Link
           href={`/gespraech/${ku.id}`}
-          className="flex min-h-[56px] items-center justify-center rounded-xl bg-blue-700 px-4 text-center text-base font-semibold text-white active:bg-blue-800"
+          className="btn-ink flex min-h-[56px] items-center justify-center px-4 text-center text-base"
         >
           🎧 Interview mit Willi starten (sprechen)
         </Link>
         <Link
           href={`/interview/${ku.id}`}
-          className="flex min-h-[48px] items-center justify-center rounded-xl border border-neutral-300 px-4 text-center text-base font-medium text-neutral-800 active:bg-neutral-100"
+          className="flex min-h-[48px] items-center justify-center rounded-full border border-neutral-300 bg-white px-4 text-center text-base font-medium text-neutral-800 active:bg-neutral-100"
         >
           ⌨️ Lieber tippen
         </Link>

@@ -174,7 +174,7 @@ export default function InterviewChat({
         <button
           type="submit"
           disabled={busy || !input.trim()}
-          className="rounded-xl bg-neutral-900 px-4 py-3 text-sm font-semibold text-white disabled:opacity-40"
+          className="btn-ink px-5 py-3 text-sm disabled:opacity-40"
         >
           Senden
         </button>

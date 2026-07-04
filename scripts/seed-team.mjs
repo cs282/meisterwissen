@@ -181,7 +181,8 @@ const UNITS = [
     ],
     common_mistakes: ["Ohne Saugtest grundiert → falsche Grundierung.", "Nicht tragfähigen Altanstrich überstrichen → Abplatzungen."],
     diagnosis_hints: [
-      "Abrieb an der Hand = Kalk-/Leimfarbe, kreidet → Tiefgrund nötig.",
+      "Abrieb an der Hand = kreidender Altanstrich → mit Tiefgrund festigen.",
+      "Starker Abrieb schon beim trockenen Wischen = Leimfarbe → komplett abwaschen, Grundieren allein reicht NICHT.",
       "Wasser perlt ab = Untergrund gesperrt, kein Tiefgrund nötig.",
     ],
     transcript: "Bevor ich streiche, mach ich immer den Wischtest und den Saugtest mit Wasser. Kreidet die Wand oder saugt stark, kommt Tiefgrund drauf. Flecken wie Nikotin muss ich isolieren.",
@@ -192,13 +193,13 @@ const UNITS = [
     situation: "Die Wand ist vom Rauchen vergilbt. Einfach Dispersion drüber schlägt nach ein paar Tagen wieder durch.",
     steps: [
       S(1, "Wand nebelfeucht reinigen (ggf. mit Reiniger), gut trocknen lassen."),
-      S(2, "Isolier-/Sperrgrund (Aufbrennsperre) satt auftragen.", null, "Zu dünn = der Fleck schlägt wieder durch."),
+      S(2, "Isoliergrund (Absperrgrund) satt auftragen.", null, "Zu dünn = der Fleck schlägt wieder durch."),
       S(3, "Trocknungszeit nach Herstellerangabe einhalten."),
       S(4, "Erste Deckschicht Dispersion auftragen."),
       S(5, "Zweite Deckschicht deckend auftragen."),
     ],
     materials: [
-      { produkt: "Isoliergrund / Aufbrennsperre", hersteller: "diverse", verbrauch_pro_m2: "nach Herstellerangabe", gebinde: "z. B. 2,5 l" },
+      { produkt: "Isoliergrund / Absperrgrund", hersteller: "diverse", verbrauch_pro_m2: "nach Herstellerangabe", gebinde: "z. B. 2,5 l" },
       { produkt: "Dispersion matt", hersteller: "Brillux / Caparol", verbrauch_pro_m2: "ca. 150 ml/m² je Anstrich", gebinde: "12,5 l" },
     ],
     expert_tips: [
@@ -207,7 +208,7 @@ const UNITS = [
     ],
     common_mistakes: ["Direkt Dispersion ohne Sperre → Flecken schlagen durch.", "Sperrgrund zu dünn aufgetragen."],
     diagnosis_hints: ["Gelbe Ränder nach dem Trocknen = Sperrgrund fehlte oder war zu dünn."],
-    transcript: "Bei einer Nikotinwand reinige ich erst, dann kommt satt ein Sperrgrund als Aufbrennsperre drauf. Ohne die schlägt das Gelb wieder durch. Danach zwei Schichten Dispersion.",
+    transcript: "Bei einer Nikotinwand reinige ich erst, dann kommt satt ein Isoliergrund (Absperrgrund) drauf. Ohne die schlägt das Gelb wieder durch. Danach zwei Schichten Dispersion.",
   },
   {
     id: uid("a0000003", 10), category: "G7", created_by: "Toni (Facharbeiter)",

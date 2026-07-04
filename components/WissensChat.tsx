@@ -37,6 +37,11 @@ export default function WissensChat({
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, streaming]);
 
+  // Beim Verlassen der Seite laufende Sprachausgabe stoppen.
+  useEffect(() => {
+    return () => audioRef.current?.pause();
+  }, []);
+
   async function ask(question: string) {
     if (!question.trim() || busy) return;
     setError(null);

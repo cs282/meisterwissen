@@ -44,7 +44,8 @@ export default async function BibliothekPage({
   return (
     <main className="mx-auto flex min-h-screen max-w-md flex-col gap-5 p-5">
       <header className="pt-2">
-        <h1 className="text-2xl font-bold">Bibliothek</h1>
+        <p className="eyebrow text-neutral-400">Wissensbank</p>
+        <h1 className="font-display mt-1 text-3xl font-semibold tracking-tight">Bibliothek</h1>
         <p className="mt-1 text-base text-neutral-600">
           {units.length} Wissensbaustein{units.length === 1 ? "" : "e"}
           {filter ? ` in „${groupLabelForKey(filter)}"` : ""}
@@ -82,9 +83,7 @@ export default async function BibliothekPage({
         return (
           <section key={g.key} className="flex flex-col gap-2.5">
             <div className="flex items-start justify-between gap-3">
-              <h2 className="text-sm font-bold uppercase tracking-wide text-neutral-500">
-                {g.label}
-              </h2>
+              <h2 className="eyebrow pt-1 text-neutral-400">{g.label}</h2>
               <RubrikAudioButton kat={g.key} label={g.short} />
             </div>
             <div className="flex flex-col gap-2">
@@ -97,7 +96,7 @@ export default async function BibliothekPage({
                     className="flex min-h-[64px] items-center justify-between gap-3 rounded-xl border border-neutral-200 bg-white p-4 active:bg-neutral-100"
                   >
                     <div className="min-w-0">
-                      <p className="truncate text-base font-semibold text-neutral-900">
+                      <p className="line-clamp-2 text-base font-semibold text-neutral-900">
                         {u.title || "Ohne Titel"}
                       </p>
                       <p className="mt-0.5 truncate text-sm text-neutral-500">

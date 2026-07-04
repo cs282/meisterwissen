@@ -33,7 +33,10 @@ export default function PhotoSection({ unitId, items }: { unitId: string; items:
 
   return (
     <section className="flex flex-col gap-2">
-      <h2 className="text-sm font-semibold">Baustellenbilder</h2>
+      <div className="flex items-center gap-3">
+        <h2 className="eyebrow text-neutral-400">Baustellenbilder</h2>
+        <span className="rule-gold flex-1" />
+      </div>
       {items.length > 0 && (
         <div className="grid grid-cols-3 gap-2">
           {items.map((p) =>

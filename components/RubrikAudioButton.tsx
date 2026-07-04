@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 /**
  * „🔊 Willi erklärt": holt eine kurze gesprochene Zusammenfassung des
@@ -10,6 +10,11 @@ export default function RubrikAudioButton({ kat, label }: { kat: string; label: 
   const [state, setState] = useState<"idle" | "loading" | "playing">("idle");
   const [error, setError] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Beim Verlassen der Seite laufende Sprachausgabe stoppen.
+  useEffect(() => {
+    return () => audioRef.current?.pause();
+  }, []);
 
   async function play() {
     if (state === "playing") {

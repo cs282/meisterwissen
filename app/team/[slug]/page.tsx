@@ -49,7 +49,7 @@ export default async function AvatarPage({
             {emoji}
           </span>
           <div className="min-w-0">
-            <h1 className="truncate text-2xl font-bold">{name}</h1>
+            <h1 className="font-display truncate text-3xl font-semibold tracking-tight">{name}</h1>
             {resolved.role && <p className="truncate text-sm text-neutral-600">{resolved.role}</p>}
             <p className="text-sm text-neutral-500">
               {mine.length} Baustein{mine.length === 1 ? "" : "e"}
